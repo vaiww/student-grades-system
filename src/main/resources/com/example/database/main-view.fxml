@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:id="mainBorderPane"
+            fx:controller="com.example.database.MainController"
+            stylesheets="@styles/dark-theme.css">
+
+
+    <top>
+        <MenuBar>
+            <Menu text="Файл">
+                <MenuItem text="Выйти" onAction="#onExit"/>
+            </Menu>
+            <Menu text="Справочники">
+                <MenuItem text="Экспорт" onAction="#onExport"/>
+                <MenuItem text="Импорт" onAction="#onImport"/>
+            </Menu>
+            <Menu text="Отчёты">
+                <MenuItem text="Сформировать" onAction="#onGenerateReport"/>
+            </Menu>
+            <Menu text="Вид">
+                <MenuItem text="Светлая тема" onAction="#enableLightTheme"/>
+                <MenuItem text="Тёмная тема" onAction="#enableDarkTheme"/>
+            </Menu>
+            <Menu text="Помощь">
+                <MenuItem text="О программе" onAction="#onAbout"/>
+            </Menu>
+        </MenuBar>
+    </top>
+
+
+    <center>
+        <TabPane fx:id="tabPane">
+
+
+            <Tab text="Колледж" closable="false">
+                <BorderPane>
+
+
+                    <center>
+                        <GridPane hgap="15" vgap="15" style="-fx-padding:20;">
+                            <columnConstraints>
+                                <ColumnConstraints minWidth="150"/>
+                                <ColumnConstraints hgrow="ALWAYS"/>
+                            </columnConstraints>
+
+                            <Label text="Название:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                            <TextField fx:id="collegeNameField"
+                                       GridPane.columnIndex="1"
+                                       GridPane.rowIndex="0"
+                                       GridPane.hgrow="ALWAYS"/>
+
+                            <Label text="Адрес:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                            <TextField fx:id="collegeAddressField"
+                                       GridPane.columnIndex="1"
+                                       GridPane.rowIndex="1"
+                                       GridPane.hgrow="ALWAYS"/>
+
+                            <Label text="Телефон:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                            <TextField fx:id="collegePhoneField"
+                                       GridPane.columnIndex="1"
+                                       GridPane.rowIndex="2"
+                                       GridPane.hgrow="ALWAYS"/>
+
+                            <Label text="Информация:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                            <TextArea fx:id="collegeInfoArea"
+                                      prefRowCount="4"
+                                      wrapText="true"
+                                      GridPane.columnIndex="1"
+                                      GridPane.rowIndex="3"
+                                      GridPane.hgrow="ALWAYS"/>
+
+                            <Button text="Сохранить"
+                                    GridPane.columnIndex="1"
+                                    GridPane.rowIndex="4"
+                                    maxWidth="Infinity"
+                                    onAction="#saveCollege"/>
+                        </GridPane>
+                    </center>
+
+
+                    <bottom>
+                        <VBox alignment="CENTER" spacing="10" style="-fx-padding:15;">
+                            <StackPane fx:id="imageContainer"
+                                       style="
+                                           -fx-border-color: #5C6BC0;
+                                           -fx-border-width: 2;
+                                           -fx-border-radius: 10;
+                                           -fx-background-radius: 10;
+                                           -fx-padding: 8;
+                                       ">
+
+
+                                <Button text="⟨"
+                                        onAction="#prevCollegeImage"
+                                        styleClass="image-nav"
+                                        StackPane.alignment="CENTER_LEFT"/>
+
+
+                                <ImageView fx:id="collegeImageView"
+                                           fitHeight="220"
+                                           preserveRatio="true"
+                                           smooth="true"
+                                           style="-fx-cursor: hand;"
+                                           onMouseClicked="#changeCollegeImage"/>
+
+
+                                <Button text="⟩"
+                                        onAction="#nextCollegeImage"
+                                        styleClass="image-nav"
+                                        StackPane.alignment="CENTER_RIGHT"/>
+                            </StackPane>
+
+                            <Label text="Нажмите на фото или используйте стрелки"
+                                   style="-fx-text-fill: gray;"/>
+                        </VBox>
+                    </bottom>
+
+                </BorderPane>
+            </Tab>
+
+
+            <Tab text="Студенты" closable="false">
+                <VBox spacing="10" style="-fx-padding:15;">
+
+                    <HBox spacing="8">
+                        <TextField fx:id="studentSearchField"
+                                   promptText="Поиск по фамилии, имени, группе..."
+                                   HBox.hgrow="ALWAYS"
+                                   onKeyReleased="#searchStudents"/>
+                        <Button text="Печать списка" onAction="#printStudents"/>
+                    </HBox>
+
+                    <TableView fx:id="studentsTable" prefHeight="420">
+                        <columns>
+                            <TableColumn fx:id="stuIdCol"
+                                         text="ID"
+                                         prefWidth="50"/>
+
+                            <TableColumn fx:id="stuLastNameCol"
+                                         text="Фамилия"
+                                         prefWidth="130"/>
+
+                            <TableColumn fx:id="stuFirstNameCol"
+                                         text="Имя"
+                                         prefWidth="130"/>
+
+                            <TableColumn fx:id="stuPatronymicCol"
+                                         text="Отчество"
+                                         prefWidth="120"/>
+
+                            <TableColumn fx:id="stuPhoneCol"
+                                         text="Телефон"
+                                         prefWidth="140"/>
+
+                            <TableColumn fx:id="stuBirthdayCol"
+                                         text="Дата рождения"
+                                         prefWidth="130"/>
+
+                            <TableColumn fx:id="stuAgeCol"
+                                         text="Возраст"
+                                         prefWidth="80"/>
+
+                            <!-- 🔹 НОВАЯ КОЛОНКА -->
+                            <TableColumn fx:id="stuCourseCol"
+                                         text="Курс"
+                                         prefWidth="70"/>
+
+                            <TableColumn fx:id="stuGroupCol"
+                                         text="Группа"
+                                         prefWidth="120"/>
+
+                            <TableColumn fx:id="stuSpecCol"
+                                         text="Специальность"
+                                         prefWidth="170"/>
+                        </columns>
+                    </TableView>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Добавить" onAction="#addStudent"/>
+                        <Button text="Изменить" onAction="#editStudent"/>
+                        <Button text="Удалить" onAction="#deleteStudent"/>
+                    </HBox>
+
+                </VBox>
+            </Tab>
+
+
+            <Tab text="Группы" closable="false">
+                <VBox spacing="10" style="-fx-padding:15;">
+                    <HBox spacing="8">
+                        <TextField fx:id="groupSearchField"
+                                   promptText="Поиск по названию или куратору..."
+                                   HBox.hgrow="ALWAYS"
+                                   onKeyReleased="#searchGroups"/>
+                        <Button text="Печать списка" onAction="#printGroups"/>
+                    </HBox>
+
+                    <TableView fx:id="groupsTable" prefHeight="420">
+                        <columns>
+                            <TableColumn fx:id="groupIdCol" text="ID" prefWidth="50"/>
+                            <TableColumn fx:id="groupNameCol" text="Название группы" prefWidth="150"/>
+                            <TableColumn fx:id="groupSpecCol" text="Специальность" prefWidth="200"/>
+                            <TableColumn fx:id="groupCuratorCol" text="Куратор" prefWidth="200"/>
+                        </columns>
+                    </TableView>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Добавить" onAction="#addGroup"/>
+                        <Button text="Изменить" onAction="#editGroup"/>
+                        <Button text="Удалить" onAction="#deleteGroup"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <Tab text="Дисциплины" closable="false">
+                <VBox spacing="10" style="-fx-padding:15;">
+                    <HBox spacing="8">
+                        <TextField fx:id="subjectSearchField"
+                                   promptText="Поиск по названию..."
+                                   HBox.hgrow="ALWAYS"
+                                   onKeyReleased="#searchSubjects"/>
+                        <Button text="Печать списка" onAction="#printSubjects"/>
+                    </HBox>
+
+                    <TableView fx:id="subjectTable" prefHeight="420">
+                        <columns>
+                            <TableColumn fx:id="subjectIdCol" text="ID" prefWidth="60"/>
+                            <TableColumn fx:id="subjectNameCol" text="Название" prefWidth="250"/>
+                            <TableColumn fx:id="subjectDescCol" text="Описание" prefWidth="400"/>
+                        </columns>
+                    </TableView>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Добавить" onAction="#addSubject"/>
+                        <Button text="Изменить" onAction="#editSubject"/>
+                        <Button text="Удалить" onAction="#deleteSubject"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+
+            <Tab text="Преподаватели" closable="false">
+                <VBox spacing="10" style="-fx-padding:15;">
+                    <HBox spacing="8">
+                        <TextField fx:id="teacherSearchField"
+                                   promptText="Поиск по фамилии или имени..."
+                                   HBox.hgrow="ALWAYS"
+                                   onKeyReleased="#searchTeachers"/>
+                        <Button text="Печать списка" onAction="#printTeachers"/>
+                    </HBox>
+
+                    <TableView fx:id="teachersTable" prefHeight="400">
+                        <columns>
+                            <TableColumn fx:id="teacherIdCol" text="ID" prefWidth="40"/>
+                            <TableColumn fx:id="teacherLastNameCol" text="Фамилия" prefWidth="120"/>
+                            <TableColumn fx:id="teacherFirstNameCol" text="Имя" prefWidth="120"/>
+                            <TableColumn fx:id="teacherPatronymicCol" text="Отчество" prefWidth="120"/>
+                            <TableColumn fx:id="teacherPhoneCol" text="Телефон" prefWidth="120"/>
+                            <TableColumn fx:id="teacherPositionCol" text="Должность" prefWidth="150"/>
+                            <TableColumn fx:id="teacherBirthdayCol" text="Дата рождения" prefWidth="120"/>
+                            <TableColumn fx:id="teacherRoomCol" text="Кабинет" prefWidth="90"/>
+                            <TableColumn fx:id="teacherIsCuratorCol" text="Куратор" prefWidth="80"/>
+                            <TableColumn fx:id="teacherGroupCol" text="Группы" prefWidth="180"/>
+                            <TableColumn fx:id="teacherSubjectCol" text="Предметы" prefWidth="180"/>
+                        </columns>
+                    </TableView>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Добавить" onAction="#openAddTeacherDialog"/>
+                        <Button text="Изменить" onAction="#openEditTeacherDialog"/>
+                        <Button text="Удалить" onAction="#deleteTeacher"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+
+            <Tab text="Оценки" closable="false">
+                <VBox spacing="10" style="-fx-padding:15;">
+                    <HBox spacing="8">
+                        <TextField fx:id="gradeSearchField"
+                                   promptText="Поиск по студенту, предмету, преподавателю..."
+                                   HBox.hgrow="ALWAYS"
+                                   onKeyReleased="#searchGrades"/>
+                        <Button text="Печать списка" onAction="#printGrades"/>
+                    </HBox>
+
+                    <TableView fx:id="gradesTable" prefHeight="420">
+                        <columns>
+                            <TableColumn fx:id="gradeIdCol" text="ID" prefWidth="50"/>
+                            <TableColumn fx:id="gradeStudentCol" text="Студент" prefWidth="160"/>
+                            <TableColumn fx:id="gradeTeacherCol" text="Преподаватель" prefWidth="180"/>
+                            <TableColumn fx:id="gradeSubjectCol" text="Дисциплина" prefWidth="180"/>
+                            <TableColumn fx:id="gradeGroupCol" text="Группа" prefWidth="120"/>
+                            <TableColumn fx:id="gradeDescriptionCol" text="Описание" prefWidth="220"/>
+                            <TableColumn fx:id="gradeValueCol" text="Оценка" prefWidth="80"/>
+                            <TableColumn fx:id="gradeCourseCol" text="Курс" prefWidth="60"/>
+                            <TableColumn fx:id="gradeSemesterCol" text="Семестр" prefWidth="70"/>
+                            <TableColumn fx:id="gradeDateCol" text="Дата" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Добавить" onAction="#addGrade"/>
+                        <Button text="Изменить" onAction="#editGrade"/>
+                        <Button text="Удалить" onAction="#deleteGrade"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <Tab text="Табель успеваемости" closable="false">
+                <VBox spacing="10" style="-fx-padding:15;">
+                    <HBox spacing="8">
+                        <TextField fx:id="performanceSearchField"
+                                   promptText="Поиск по студенту..."
+                                   HBox.hgrow="ALWAYS"
+                                   onKeyReleased="#searchPerformance"/>
+                        <Button text="Печать списка" onAction="#printPerformance"/>
+                    </HBox>
+
+                    <TableView fx:id="performanceTable" prefHeight="420">
+                        <columns>
+                            <TableColumn fx:id="psIdCol" text="ID" prefWidth="50"/>
+                            <TableColumn fx:id="psStudentCol" text="Студент" prefWidth="150"/>
+                            <TableColumn fx:id="psGroupCol" text="Группа" prefWidth="120"/>
+                            <TableColumn fx:id="psSpecialityCol" text="Специальность" prefWidth="150"/>
+                            <TableColumn fx:id="psCourseCol" text="Курс" prefWidth="60"/>
+                            <TableColumn fx:id="psSemesterCol" text="Семестр" prefWidth="70"/>
+                            <TableColumn fx:id="psAverageCol" text="Средний балл" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Добавить" onAction="#addPerformance"/>
+                        <Button text="Изменить" onAction="#editPerformance"/>
+                        <Button text="Удалить" onAction="#deletePerformance"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+
+            <Tab text="Расписание" closable="false">
+                <VBox spacing="10" style="-fx-padding:15;">
+                    <HBox spacing="8">
+                        <TextField fx:id="scheduleSearchField"
+                                   promptText="Поиск по предмету, группе или преподавателю..."
+                                   HBox.hgrow="ALWAYS"
+                                   onKeyReleased="#searchSchedule"/>
+                        <Button text="Печать списка" onAction="#printSchedule"/>
+                    </HBox>
+
+                    <TableView fx:id="scheduleTable" prefHeight="420">
+                        <columns>
+                            <TableColumn fx:id="schedIdCol" text="ID" prefWidth="50"/>
+                            <TableColumn fx:id="schedGroupCol" text="Группа" prefWidth="120"/>
+                            <TableColumn fx:id="schedTeacherCol" text="Преподаватель" prefWidth="120"/>
+                            <TableColumn fx:id="schedSubjectCol" text="Дисциплина" prefWidth="200"/>
+                            <TableColumn fx:id="schedDateCol" text="Дата" prefWidth="120"/>
+                            <TableColumn fx:id="schedTimeCol" text="Время" prefWidth="100"/>
+                            <TableColumn fx:id="schedRoomCol" text="Аудитория" prefWidth="80"/>
+                        </columns>
+                    </TableView>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Добавить" onAction="#addSchedule"/>
+                        <Button text="Изменить" onAction="#editSchedule"/>
+                        <Button text="Удалить" onAction="#deleteSchedule"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+        </TabPane>
+    </center>
+
+
+    <bottom>
+        <VBox spacing="3" styleClass="bottom-bar" style="-fx-padding:6;">
+            <Label fx:id="userLabel" text=""/>
+            <Label fx:id="statusLabel" text="Готово"/>
+        </VBox>
+    </bottom>
+
+</BorderPane>

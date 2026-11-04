@@ -1,0 +1,237 @@
+<html>
+<head>
+<title>TeacherDialogController.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #8c8c8c; font-style: italic;}
+.s3 { color: #067d17;}
+.s4 { color: #1750eb;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+TeacherDialogController.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.database;</span>
+
+<span class="s0">import </span><span class="s1">javafx.collections.FXCollections;</span>
+<span class="s0">import </span><span class="s1">javafx.fxml.FXML;</span>
+<span class="s0">import </span><span class="s1">javafx.scene.control.*;</span>
+<span class="s0">import </span><span class="s1">javafx.stage.Modality;</span>
+<span class="s0">import </span><span class="s1">javafx.stage.Screen;</span>
+<span class="s0">import </span><span class="s1">javafx.stage.Stage;</span>
+<span class="s0">import </span><span class="s1">javafx.scene.Scene;</span>
+<span class="s0">import </span><span class="s1">javafx.geometry.Rectangle2D;</span>
+<span class="s0">import </span><span class="s1">javafx.fxml.FXMLLoader;</span>
+<span class="s0">import </span><span class="s1">javafx.scene.Parent;</span>
+<span class="s0">import </span><span class="s1">javafx.util.StringConverter;</span>
+
+<span class="s0">import </span><span class="s1">java.io.IOException;</span>
+<span class="s0">import </span><span class="s1">java.sql.SQLException;</span>
+<span class="s0">import </span><span class="s1">java.util.List;</span>
+<span class="s0">import </span><span class="s1">java.util.stream.Collectors;</span>
+
+<span class="s0">public class </span><span class="s1">TeacherDialogController {</span>
+
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">CheckBox isCuratorCheckBox;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">TextField surnameField;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">TextField nameField;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">TextField patronymicField;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">TextField phoneField;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">TextField positionField;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">DatePicker birthdayPicker;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">TextField roomField;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">ComboBox&lt;Group&gt; curatorGroupCombo;</span>
+
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">ListView&lt;Subject&gt; subjectsListView;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">ListView&lt;Group&gt; groupsListView;</span>
+
+    <span class="s0">private </span><span class="s1">Teacher teacher;</span>
+    <span class="s0">private </span><span class="s1">TeacherDAO teacherDAO;</span>
+    <span class="s0">private </span><span class="s1">Stage dialogStage;</span>
+    <span class="s0">private boolean </span><span class="s1">saved = </span><span class="s0">false</span><span class="s1">;</span>
+    <span class="s0">private </span><span class="s1">List&lt;Group&gt; allGroups;</span>
+    <span class="s0">private </span><span class="s1">List&lt;Subject&gt; allSubjects;</span>
+
+    <span class="s0">public </span><span class="s1">Stage getDialogStage() { </span><span class="s0">return </span><span class="s1">dialogStage; }</span>
+
+    <span class="s0">public </span><span class="s1">Teacher getResult() { </span><span class="s0">return </span><span class="s1">saved ? teacher : </span><span class="s0">null</span><span class="s1">; }</span>
+
+    <span class="s0">public void </span><span class="s1">setTeacherDAO(TeacherDAO dao) {</span>
+        <span class="s0">this</span><span class="s1">.teacherDAO = dao;</span>
+        <span class="s1">loadGroups();</span>
+        <span class="s1">loadSubjects();</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setDialogStage(Stage stage) { </span><span class="s0">this</span><span class="s1">.dialogStage = stage; }</span>
+
+    <span class="s0">public void </span><span class="s1">setTeacher(Teacher teacher) {</span>
+        <span class="s0">this</span><span class="s1">.teacher = teacher != </span><span class="s0">null </span><span class="s1">? teacher : </span><span class="s0">new </span><span class="s1">Teacher();</span>
+
+        <span class="s2">// Заполняем текстовые поля</span>
+        <span class="s1">surnameField.setText(</span><span class="s0">this</span><span class="s1">.teacher.getSurname());</span>
+        <span class="s1">nameField.setText(</span><span class="s0">this</span><span class="s1">.teacher.getName());</span>
+        <span class="s1">patronymicField.setText(</span><span class="s0">this</span><span class="s1">.teacher.getPatronymic());</span>
+        <span class="s1">phoneField.setText(</span><span class="s0">this</span><span class="s1">.teacher.getPhone());</span>
+        <span class="s1">positionField.setText(</span><span class="s0">this</span><span class="s1">.teacher.getPosition());</span>
+        <span class="s1">birthdayPicker.setValue(</span><span class="s0">this</span><span class="s1">.teacher.getBirthday());</span>
+        <span class="s1">roomField.setText(</span><span class="s0">this</span><span class="s1">.teacher.getRoom());</span>
+
+        <span class="s1">isCuratorCheckBox.setSelected(</span><span class="s0">this</span><span class="s1">.teacher.isCurator());</span>
+
+        <span class="s0">if </span><span class="s1">(allGroups != </span><span class="s0">null </span><span class="s1">&amp;&amp; !allGroups.isEmpty()) {</span>
+            <span class="s2">// Выбираем кураторскую группу по curatorGroupId</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.teacher.getCuratorGroupId() != </span><span class="s0">null</span><span class="s1">) {</span>
+                <span class="s1">allGroups.stream()</span>
+                        <span class="s1">.filter(g -&gt; g.getId() == </span><span class="s0">this</span><span class="s1">.teacher.getCuratorGroupId())</span>
+                        <span class="s1">.findFirst()</span>
+                        <span class="s1">.ifPresent(curatorGroupCombo.getSelectionModel()::select);</span>
+            <span class="s1">}</span>
+
+            <span class="s2">// Выбираем группы преподавателя</span>
+            <span class="s1">groupsListView.getSelectionModel().clearSelection();</span>
+            <span class="s0">for </span><span class="s1">(Group g : allGroups) {</span>
+                <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.teacher.getSelectedGroupIds().contains(g.getId())) {</span>
+                    <span class="s1">groupsListView.getSelectionModel().select(g);</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+
+        <span class="s0">if </span><span class="s1">(allSubjects != </span><span class="s0">null </span><span class="s1">&amp;&amp; !allSubjects.isEmpty()) {</span>
+            <span class="s1">subjectsListView.getSelectionModel().clearSelection();</span>
+            <span class="s0">for </span><span class="s1">(Subject s : allSubjects) {</span>
+                <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.teacher.getSelectedSubjectIds().contains(s.getId())) {</span>
+                    <span class="s1">subjectsListView.getSelectionModel().select(s);</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+
+        <span class="s2">// Включаем/отключаем ComboBox куратора</span>
+        <span class="s1">curatorGroupCombo.setDisable(!isCuratorCheckBox.isSelected());</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">loadSubjects() {</span>
+        <span class="s1">allSubjects = teacherDAO.getAllSubjects();</span>
+        <span class="s1">subjectsListView.setItems(FXCollections.observableArrayList(allSubjects));</span>
+        <span class="s1">subjectsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">loadGroups() {</span>
+        <span class="s1">allGroups = teacherDAO.getAllGroups();</span>
+        <span class="s1">groupsListView.setItems(FXCollections.observableArrayList(allGroups));</span>
+        <span class="s1">groupsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);</span>
+
+        <span class="s1">curatorGroupCombo.setItems(FXCollections.observableArrayList(allGroups));</span>
+        <span class="s1">curatorGroupCombo.setConverter(</span><span class="s0">new </span><span class="s1">StringConverter&lt;&gt;() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public </span><span class="s1">String toString(Group g) { </span><span class="s0">return </span><span class="s1">g != </span><span class="s0">null </span><span class="s1">? g.getName() : </span><span class="s3">&quot;&quot;</span><span class="s1">; }</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public </span><span class="s1">Group fromString(String s) { </span><span class="s0">return null</span><span class="s1">; }</span>
+        <span class="s1">});</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@FXML</span>
+    <span class="s0">private void </span><span class="s1">onSave() {</span>
+        <span class="s1">teacher.setSurname(surnameField.getText());</span>
+        <span class="s1">teacher.setName(nameField.getText());</span>
+        <span class="s1">teacher.setPatronymic(patronymicField.getText());</span>
+        <span class="s1">teacher.setPhone(phoneField.getText());</span>
+        <span class="s1">teacher.setPosition(positionField.getText());</span>
+        <span class="s1">teacher.setBirthday(birthdayPicker.getValue());</span>
+        <span class="s1">teacher.setRoom(roomField.getText());</span>
+        <span class="s1">teacher.setCurator(isCuratorCheckBox.isSelected());</span>
+
+        <span class="s1">Group selectedCurator = curatorGroupCombo.getSelectionModel().getSelectedItem();</span>
+        <span class="s1">teacher.setCuratorGroupId(isCuratorCheckBox.isSelected() &amp;&amp; selectedCurator != </span><span class="s0">null</span>
+                <span class="s1">? selectedCurator.getId()</span>
+                <span class="s1">: </span><span class="s0">null</span><span class="s1">);</span>
+
+        <span class="s1">teacher.setSelectedSubjectIds(subjectsListView.getSelectionModel().getSelectedItems()</span>
+                <span class="s1">.stream().map(Subject::getId).collect(Collectors.toList()));</span>
+
+        <span class="s1">teacher.setSelectedGroupIds(groupsListView.getSelectionModel().getSelectedItems()</span>
+                <span class="s1">.stream().map(Group::getId).collect(Collectors.toList()));</span>
+
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s0">if </span><span class="s1">(teacher.getIdt() == </span><span class="s4">0</span><span class="s1">) teacherDAO.addTeacher(teacher);</span>
+            <span class="s0">else </span><span class="s1">teacherDAO.updateTeacher(teacher);</span>
+            <span class="s1">saved = </span><span class="s0">true</span><span class="s1">;</span>
+            <span class="s1">dialogStage.close();</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(SQLException e) {</span>
+            <span class="s1">showError(</span><span class="s3">&quot;Ошибка сохранения преподавателя&quot;</span><span class="s1">, e);</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@FXML</span>
+    <span class="s0">private void </span><span class="s1">onCancel() {</span>
+        <span class="s1">dialogStage.close();</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@FXML</span>
+    <span class="s0">public void </span><span class="s1">initialize() {</span>
+        <span class="s1">subjectsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);</span>
+        <span class="s1">groupsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);</span>
+
+        <span class="s1">isCuratorCheckBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -&gt; {</span>
+            <span class="s1">curatorGroupCombo.setDisable(!isNowSelected);</span>
+        <span class="s1">});</span>
+        <span class="s1">curatorGroupCombo.setDisable(!isCuratorCheckBox.isSelected());</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public static void </span><span class="s1">openDialog(Stage owner, TeacherDAO dao, Teacher teacher) {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">FXMLLoader loader = </span><span class="s0">new </span><span class="s1">FXMLLoader(TeacherDialogController.</span><span class="s0">class</span><span class="s1">.getResource(</span><span class="s3">&quot;Teacher-dialog.fxml&quot;</span><span class="s1">));</span>
+            <span class="s1">Parent root = loader.load();</span>
+            <span class="s1">TeacherDialogController controller = loader.getController();</span>
+            <span class="s1">controller.setTeacherDAO(dao);</span>
+            <span class="s1">controller.setTeacher(teacher);</span>
+
+            <span class="s1">Stage dialogStage = </span><span class="s0">new </span><span class="s1">Stage();</span>
+            <span class="s1">controller.setDialogStage(dialogStage);</span>
+
+            <span class="s1">dialogStage.initOwner(owner);</span>
+            <span class="s1">dialogStage.initModality(Modality.APPLICATION_MODAL);</span>
+            <span class="s1">dialogStage.setTitle(teacher == </span><span class="s0">null </span><span class="s1">? </span><span class="s3">&quot;Добавить преподавателя&quot; </span><span class="s1">: </span><span class="s3">&quot;Редактировать преподавателя&quot;</span><span class="s1">);</span>
+
+            <span class="s1">Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();</span>
+            <span class="s1">Scene scene = </span><span class="s0">new </span><span class="s1">Scene(root);</span>
+            <span class="s1">dialogStage.setScene(scene);</span>
+
+            <span class="s1">dialogStage.setWidth(Math.min(</span><span class="s4">800</span><span class="s1">, screenBounds.getWidth() * </span><span class="s4">0.9</span><span class="s1">));</span>
+            <span class="s1">dialogStage.setHeight(Math.min(</span><span class="s4">600</span><span class="s1">, screenBounds.getHeight() * </span><span class="s4">0.9</span><span class="s1">));</span>
+            <span class="s1">dialogStage.setMaxWidth(screenBounds.getWidth() * </span><span class="s4">0.95</span><span class="s1">);</span>
+            <span class="s1">dialogStage.setMaxHeight(screenBounds.getHeight() * </span><span class="s4">0.95</span><span class="s1">);</span>
+
+            <span class="s1">dialogStage.showAndWait();</span>
+
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(IOException e) {</span>
+            <span class="s1">showErrorStatic(</span><span class="s3">&quot;Ошибка при открытии диалога&quot;</span><span class="s1">, e);</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">showError(String message, Exception e) {</span>
+        <span class="s1">e.printStackTrace();</span>
+        <span class="s1">Alert alert = </span><span class="s0">new </span><span class="s1">Alert(Alert.AlertType.ERROR);</span>
+        <span class="s1">alert.setTitle(</span><span class="s3">&quot;Ошибка&quot;</span><span class="s1">);</span>
+        <span class="s1">alert.setHeaderText(message);</span>
+        <span class="s1">alert.setContentText(e.getMessage());</span>
+        <span class="s1">alert.initOwner(dialogStage);</span>
+        <span class="s1">alert.showAndWait();</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private static void </span><span class="s1">showErrorStatic(String message, Exception e) {</span>
+        <span class="s1">e.printStackTrace();</span>
+        <span class="s1">Alert alert = </span><span class="s0">new </span><span class="s1">Alert(Alert.AlertType.ERROR);</span>
+        <span class="s1">alert.setTitle(</span><span class="s3">&quot;Ошибка&quot;</span><span class="s1">);</span>
+        <span class="s1">alert.setHeaderText(message);</span>
+        <span class="s1">alert.setContentText(e.getMessage());</span>
+        <span class="s1">alert.showAndWait();</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

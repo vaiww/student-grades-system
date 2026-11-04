@@ -1,0 +1,29 @@
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Build files
+out/
+target/
+build/
+.gradle/
+
+# Compiled files
+*.class
+
+# Logs
+*.log
+
+# Local settings and secrets
+.env
+.env.*
+db.properties
+application-local.properties
+config-local.properties
+
+# Operating system
+.DS_Store
+Thumbs.db
+# Database credentials
+db.properties
