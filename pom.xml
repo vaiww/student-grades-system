@@ -109,7 +109,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.database/com.example.database.HelloApplication</mainClass>
+                            <mainClass>com.example.database/com.example.database.MainApp</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
